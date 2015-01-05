@@ -22,7 +22,9 @@
   "homepage": "https://github.com/MisumiRize/gulp-middleman",
   "dependencies": {
     "coffee-script": "*",
-    "gulp-util": "*"
+    "gulp-util": "*",
+    "which":"*",
+    "path":"*"
   },
   "devDependencies": {
     "chai": "*",

@@ -1,9 +1,13 @@
 (function() {
-  var Middleman, PLUGIN_NAME, gutil, spawn;
+  var Middleman, PLUGIN_NAME, gutil, path, spawn, which;
 
   spawn = require("child_process").spawn;
 
+  which = require("which").sync;
+
   gutil = require("gulp-util");
+
+  path = require("path");
 
   PLUGIN_NAME = "gulp-middleman";
 
@@ -64,12 +68,26 @@
 
   module.exports = {
     server: function(options) {
-      var child, middleman;
+      var child, cmd, err, middleman, pathSeparatorRe;
       if (options == null) {
         options = {};
       }
       middleman = new Middleman(options);
-      child = spawn(middleman.getCommand(), middleman.getArguments("server"));
+      cmd = middleman.getCommand();
+      pathSeparatorRe = /[\\\/]/g;
+      try {
+        if (!pathSeparatorRe.test(cmd)) {
+          cmd = which(cmd);
+        } else {
+
+        }
+        cmd = cmd.replace(pathSeparatorRe, path.sep);
+      } catch (_error) {
+        err = _error;
+        console.log(err);
+      }
+      console.log(cmd, middleman.getArguments("server"));
+      child = spawn(cmd, middleman.getArguments("server"));
       child.stdout.pipe(process.stdout);
       child.stderr.pipe(process.stderr);
       process.stdin.on("end", function() {
@@ -80,12 +98,26 @@
       });
     },
     build: function(options) {
-      var child, middleman;
+      var child, cmd, err, middleman, pathSeparatorRe;
       if (options == null) {
         options = {};
       }
       middleman = new Middleman(options);
-      child = spawn(middleman.getCommand(), middleman.getArguments("build"));
+      cmd = middleman.getCommand();
+      pathSeparatorRe = /[\\\/]/g;
+      try {
+        if (!pathSeparatorRe.test(cmd)) {
+          cmd = which(cmd);
+        } else {
+
+        }
+        cmd = cmd.replace(pathSeparatorRe, path.sep);
+      } catch (_error) {
+        err = _error;
+        console.log(err);
+      }
+      console.log(cmd, middleman.getArguments("build"));
+      child = spawn(cmd, middleman.getArguments("build"));
       child.stdout.pipe(process.stdout);
       child.stderr.pipe(process.stderr);
       process.stdin.on("end", function() {

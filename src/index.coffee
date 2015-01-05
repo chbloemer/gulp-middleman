@@ -1,5 +1,7 @@
 {spawn} = require "child_process"
+which = require("which").sync
 gutil = require "gulp-util"
+path = require "path"
 
 PLUGIN_NAME = "gulp-middleman"
 
@@ -33,8 +35,19 @@ class Middleman
 module.exports =
   server: (options = {}) ->
     middleman = new Middleman options
+    cmd = middleman.getCommand();
+    pathSeparatorRe = /[\\\/]/g;
+    try
+      if (!pathSeparatorRe.test(cmd))
+#         Only use which if cmd has no path component.
+        cmd = which(cmd);
+      else
+      cmd = cmd.replace(pathSeparatorRe, path.sep);
+    catch err
+      console.log(err)
 
-    child = spawn middleman.getCommand(), middleman.getArguments("server")
+    console.log(cmd, middleman.getArguments("server"))
+    child = spawn cmd, middleman.getArguments("server")
     child.stdout.pipe process.stdout
     child.stderr.pipe process.stderr
     process.stdin.on "end", ->
@@ -44,8 +57,19 @@ module.exports =
 
   build: (options = {}) ->
     middleman = new Middleman options
+    cmd = middleman.getCommand();
+    pathSeparatorRe = /[\\\/]/g;
+    try
+      if (!pathSeparatorRe.test(cmd))
+#         Only use which if cmd has no path component.
+        cmd = which(cmd);
+      else
+      cmd = cmd.replace(pathSeparatorRe, path.sep);
+    catch err
+      console.log(err)
 
-    child = spawn middleman.getCommand(), middleman.getArguments("build")
+    console.log(cmd, middleman.getArguments("build"))
+    child = spawn cmd, middleman.getArguments("build")
     child.stdout.pipe process.stdout
     child.stderr.pipe process.stderr
     process.stdin.on "end", ->
